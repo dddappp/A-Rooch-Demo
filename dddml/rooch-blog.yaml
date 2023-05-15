@@ -1,0 +1,91 @@
+aggregates:
+  Article:
+    id:
+      name: Id
+      type: ObjectID
+      arbitrary: true
+
+    properties:
+      Title:
+        type: String
+      Author:
+        type: address
+      Content:
+        type: String
+      Tags:
+        itemType: ObjectID
+      References:
+        itemType: Reference
+
+    entities:
+      Reference:
+        id:
+          name: ReferenceNumber
+          type: u64
+        properties:
+          Title:
+            type: String
+          Author:
+            type: String
+          PublicationYear:
+            type: u64
+            optional: true
+          Publisher:
+            type: String
+            optional: true
+          Doi:
+            type: String
+            optional: true
+          Url:
+            type: String
+            optional: true
+          PageNumber:
+            type: u64
+            optional: true
+
+    methods:
+      Create:
+        isCreationCommand: true
+        parameters:
+          Title:
+            type: String
+          Author:
+            type: address
+          Content:
+            type: String
+          Tags:
+            itemType: ObjectID
+        event:
+          name: ArticleCreated
+          properties:
+            Owner:
+              type: address
+              #isOwner: true
+
+      AddReference:
+        parameters:
+          ReferenceNumber:
+            type: u64
+          Title:
+            type: String
+          Url:
+            type: String
+            optional: true
+        event:
+          name: ReferenceAdded
+
+  Tag:
+    id:
+      name: Name
+      type: String
+      generator:
+        class: assigned
+        tableName: TagNameTable
+    methods:
+      Create:
+        isCreationCommand: true
+        parameters:
+          #Name:
+          #  type: String
+        event:
+          name: TagCreated
