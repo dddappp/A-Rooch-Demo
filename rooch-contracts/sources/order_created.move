@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::order_created {
 
-    use moveos_std::object::ObjectID;
+    use moveos_std::object_id::ObjectID;
     use rooch_test_proj1::order::{Self, OrderCreated};
     use std::option;
     use std::string::String;

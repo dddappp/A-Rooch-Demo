@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::reference_added {
 
-    use moveos_std::object::ObjectID;
+    use moveos_std::object_id::ObjectID;
     use rooch_test_proj1::article::{Self, ReferenceAdded};
     use std::option::Option;
     use std::string::String;

@@ -1,11 +1,15 @@
 module rooch_test_proj1::article_create_logic {
+    use std::option;
     use std::signer;
-    use std::string::String;
-    use rooch_test_proj1::article;
-    use moveos_std::storage_context::StorageContext;
-    use moveos_std::object::{Object, ObjectID};
-    use std::string;
+    use std::string::{Self, String};
     use std::vector;
+
+    use moveos_std::object::{Object};
+    use moveos_std::object_id::ObjectID;
+    use moveos_std::storage_context::StorageContext;
+    use rooch_test_proj1::article;
+    use rooch_test_proj1::reference;
+    use rooch_test_proj1::reference_vo::{Self, ReferenceVO};
     use rooch_test_proj1::tag;
 
     friend rooch_test_proj1::article_aggregate;
@@ -16,6 +20,7 @@ module rooch_test_proj1::article_create_logic {
         title: String,
         author: address,
         content: String,
+        references: vector<ReferenceVO>,
         tags: vector<ObjectID>,
     ): article::ArticleCreated {
         let _ = storage_ctx;
@@ -39,6 +44,7 @@ module rooch_test_proj1::article_create_logic {
             title,
             author,
             content,
+            references,
             tags,
             owner
         )
@@ -55,6 +61,26 @@ module rooch_test_proj1::article_create_logic {
             article::article_created_content(article_created),
             article::article_created_tags(article_created),
         );
+        let references = article::article_created_references(article_created);
+        let i = 0;
+        while (i < vector::length(&references)) {
+            let r = vector::borrow(&references, i);
+            article::add_reference(
+                storage_ctx,
+                &mut article,
+                reference::new_reference(
+                    reference_vo::reference_number(r),
+                    reference_vo::title(r),
+                    string::utf8(b"Unknown"),
+                    option::none(),
+                    option::none(),
+                    option::none(),
+                    reference_vo::url(r),
+                    option::none(),
+                ),
+            );
+            i = i + 1;
+        };
         article
     }
 }

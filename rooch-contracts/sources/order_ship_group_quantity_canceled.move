@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::order_ship_group_quantity_canceled {
 
-    use moveos_std::object::ObjectID;
+    use moveos_std::object_id::ObjectID;
     use rooch_test_proj1::order::{Self, OrderShipGroupQuantityCanceled};
     use std::string::String;
 

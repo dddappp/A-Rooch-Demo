@@ -5,7 +5,9 @@
 
 module rooch_test_proj1::product {
     use moveos_std::account_storage;
-    use moveos_std::object::{Self, Object, ObjectID};
+    use moveos_std::events;
+    use moveos_std::object::{Self, Object};
+    use moveos_std::object_id::ObjectID;
     use moveos_std::object_storage;
     use moveos_std::storage_context::{Self, StorageContext};
     use moveos_std::tx_context;
@@ -20,14 +22,14 @@ module rooch_test_proj1::product {
     const EID_DATA_TOO_LONG: u64 = 102;
     const EINAPPROPRIATE_VERSION: u64 = 103;
     const ENOT_GENESIS_ACCOUNT: u64 = 105;
-
     const PRODUCT_ID_LENGTH: u64 = 20;
+
 
     struct ProductIdGenerator has key {
         sequence: u128,
     }
 
-    struct ProductIdGeneratorCreated has store, drop {
+    struct ProductIdGeneratorCreated has key {
     }
 
     public fun initialize(storage_ctx: &mut StorageContext, account: &signer) {
@@ -92,7 +94,7 @@ module rooch_test_proj1::product {
         }
     }
 
-    struct ProductCreated has store, drop {
+    struct ProductCreated has key {
         id: option::Option<ObjectID>,
         product_id: String,
         name: String,
@@ -186,8 +188,8 @@ module rooch_test_proj1::product {
     }
 
     public(friend) fun update_version_and_add(storage_ctx: &mut StorageContext, product_obj: Object<Product>) {
-        assert!(object::borrow(&product_obj).version != 0, EINAPPROPRIATE_VERSION);
         object::borrow_mut(&mut product_obj).version = object::borrow( &mut product_obj).version + 1;
+        assert!(object::borrow(&product_obj).version != 0, EINAPPROPRIATE_VERSION);
         private_add_product(storage_ctx, product_obj);
     }
 
@@ -212,6 +214,10 @@ module rooch_test_proj1::product {
 
     public fun return_product(storage_ctx: &mut StorageContext, product_obj: Object<Product>) {
         private_add_product(storage_ctx, product_obj);
+    }
+
+    public(friend) fun emit_product_created(storage_ctx: &mut StorageContext, product_created: ProductCreated) {
+        events::emit_event(storage_ctx, product_created);
     }
 
 }

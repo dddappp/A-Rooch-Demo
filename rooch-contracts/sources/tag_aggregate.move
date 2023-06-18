@@ -25,6 +25,7 @@ module rooch_test_proj1::tag_aggregate {
         );
         tag::set_tag_created_id(&mut tag_created, tag::id(&tag_obj));
         tag::add_tag(storage_ctx, tag_obj);
+        tag::emit_tag_created(storage_ctx, tag_created);
     }
 
 }

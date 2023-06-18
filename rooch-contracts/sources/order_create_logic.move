@@ -3,7 +3,8 @@ module rooch_test_proj1::order_create_logic {
     use std::signer;
     use std::string::String;
 
-    use moveos_std::object::{Self, Object};
+    use moveos_std::object::{Object};
+    use moveos_std::object_id::ObjectID;
     use moveos_std::storage_context::StorageContext;
     use rooch_test_proj1::order;
     use rooch_test_proj1::order_created;
@@ -16,7 +17,7 @@ module rooch_test_proj1::order_create_logic {
         storage_ctx: &mut StorageContext,
         account: &signer,
         order_id: String,
-        product_obj_id: object::ObjectID,
+        product_obj_id: ObjectID,
         quantity: u64,
     ): order::OrderCreated {
         let e_quantity = quantity;
@@ -49,7 +50,7 @@ module rooch_test_proj1::order_create_logic {
             order_created::quantity(order_created),
             order_created::unit_price(order_created) * (order_created::quantity(order_created) as u128),
         );
-        order::add_item(&mut order, order_item);
+        order::add_item(storage_ctx,&mut order, order_item);
         order
     }
 }

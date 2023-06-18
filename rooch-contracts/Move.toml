@@ -3,11 +3,11 @@ name = "RoochTestProj1"
 version = "0.0.1"
 
 [dependencies]
-MoveosStdLib = { git = "https://github.com/rooch-network/rooch.git", subdir = "moveos/moveos-stdlib/moveos-stdlib", rev = "main" }
+#MoveosStdLib = { git = "https://github.com/rooch-network/rooch.git", subdir = "moveos/moveos-stdlib/moveos-stdlib", rev = "main" }
+MoveosStdlib = { local = "../../../wubuku/rooch/moveos/moveos-stdlib/moveos-stdlib" }
 
 [addresses]
-rooch_test_proj1 = "0x123"
+rooch_test_proj1 = "_"
 
-moveos_std =  "0x1"
-rooch_framework =  "0x1"
-
+moveos_std = "0x2"
+rooch_framework = "0x3"

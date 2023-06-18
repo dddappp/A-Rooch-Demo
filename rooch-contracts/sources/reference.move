@@ -8,6 +8,8 @@ module rooch_test_proj1::reference {
     use std::string::String;
     friend rooch_test_proj1::article_create_logic;
     friend rooch_test_proj1::article_add_reference_logic;
+    friend rooch_test_proj1::article_update_reference_logic;
+    friend rooch_test_proj1::article_remove_reference_logic;
     friend rooch_test_proj1::article;
 
     const EID_DATA_TOO_LONG: u64 = 102;

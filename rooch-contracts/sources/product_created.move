@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::product_created {
 
-    use moveos_std::object::ObjectID;
+    use moveos_std::object_id::ObjectID;
     use rooch_test_proj1::product::{Self, ProductCreated};
     use std::option;
     use std::string::String;

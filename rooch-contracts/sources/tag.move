@@ -5,7 +5,9 @@
 
 module rooch_test_proj1::tag {
     use moveos_std::account_storage;
-    use moveos_std::object::{Self, Object, ObjectID};
+    use moveos_std::events;
+    use moveos_std::object::{Self, Object};
+    use moveos_std::object_id::ObjectID;
     use moveos_std::object_storage;
     use moveos_std::storage_context::{Self, StorageContext};
     use moveos_std::table::{Self, Table};
@@ -67,7 +69,7 @@ module rooch_test_proj1::tag {
         }
     }
 
-    struct TagCreated has store, drop {
+    struct TagCreated has key {
         id: option::Option<ObjectID>,
         name: String,
     }
@@ -131,8 +133,8 @@ module rooch_test_proj1::tag {
     }
 
     public(friend) fun update_version_and_add(storage_ctx: &mut StorageContext, tag_obj: Object<Tag>) {
-        assert!(object::borrow(&tag_obj).version != 0, EINAPPROPRIATE_VERSION);
         object::borrow_mut(&mut tag_obj).version = object::borrow( &mut tag_obj).version + 1;
+        assert!(object::borrow(&tag_obj).version != 0, EINAPPROPRIATE_VERSION);
         private_add_tag(storage_ctx, tag_obj);
     }
 
@@ -163,6 +165,10 @@ module rooch_test_proj1::tag {
 
     public fun return_tag(storage_ctx: &mut StorageContext, tag_obj: Object<Tag>) {
         private_add_tag(storage_ctx, tag_obj);
+    }
+
+    public(friend) fun emit_tag_created(storage_ctx: &mut StorageContext, tag_created: TagCreated) {
+        events::emit_event(storage_ctx, tag_created);
     }
 
 }

@@ -53,6 +53,8 @@ aggregates:
             type: address
           Content:
             type: String
+          References:
+            itemType: ReferenceVO
           Tags:
             itemType: ObjectID
         event:
@@ -74,6 +76,29 @@ aggregates:
         event:
           name: ReferenceAdded
 
+      UpdateReference:
+        parameters:
+          ReferenceNumber:
+            type: u64
+          Title:
+            type: String
+          Url:
+            type: String
+            optional: true
+          Author:
+            type: String
+            optional: true
+        event:
+          name: ReferenceUpdated
+
+      RemoveReference:
+        parameters:
+          ReferenceNumber:
+            type: u64
+        event:
+          name: ReferenceRemoved
+
+
   Tag:
     id:
       name: Name
@@ -89,3 +114,21 @@ aggregates:
           #  type: String
         event:
           name: TagCreated
+
+
+valueObjects:
+
+  ReferenceVO:
+    properties:
+      ReferenceNumber:
+        type: u64
+      Title:
+        type: String
+      Url:
+        type: String
+        optional: true
+#      U16ArrayMetadata: # for test
+#        itemType: u16
+#      StringArrayMetadata: # for test
+#        itemType: String
+#        optional: true
