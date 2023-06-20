@@ -48,7 +48,7 @@ It should be noted that we assume that you want to deploy the Move contracts to 
 
 ### Write DDDML Model Files
 
-Our low-code tool relies on the domain model described by DDDML (Domain Driven Design Modeling Language) to generate various parts of the application code.
+Our low-code tool relies on the domain model described by DDDML (Domain-Driven Design Modeling Language) to generate various parts of the application code.
 
 > **Tip**
 >
@@ -310,7 +310,7 @@ The `.dddmlignore` file is similar to a `.gitignore` file, with each line repres
 ```
 
 
-## Some tips
+## Some Tips
 
 ### Use this Rooch Move CLI Cheatsheet
 
