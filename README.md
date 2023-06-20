@@ -52,7 +52,7 @@ Our low-code tool relies on the domain model described by DDDML (Domain Driven D
 
 > **Tip**
 >
-> About DDDML, here is an introductory article: https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML.md
+> About DDDML, here is an introductory article: ["Introducing DDDML: The Key to Low-Code Development for Decentralized Applications"](https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML.md). This article contains detailed explanations of some DDDML model files used in this Demo.
 
 You can create a directory, for example, called `test`, to place all the application code, and then create a subdirectory `dddml` within this directory. We generally put the model files written according to the DDDML specification in this directory.
 
@@ -86,7 +86,7 @@ The command parameters above are straightforward:
 
 * `dddmlDirectoryPath` is the directory where the DDDML model files are located. It should be a directory path that can be read in the container.
 
-* Understand the value of the `boundedContextName` parameter as the name of the application you want to develop. When the name has multiple parts, separate them with a dot and use the PascalCase naming convention for each part. Bounded-context is a term in Domain-driven design (DDD) that refers to a specific problem domain scope that contains specific business boundaries, constraints, and language. If you cannot understand this concept for the time being, it is not a big deal.
+* Understand the value of the `boundedContextName` parameter as the name of the application you want to develop. When the name has multiple parts, separate them with dots and use the PascalCase naming convention for each part. Bounded-context is a term in Domain-driven design (DDD) that refers to a specific problem domain scope that contains specific business boundaries, constraints, and language. If you cannot understand this concept for the time being, it is not a big deal.
 
 * `boundedContextJavaPackageName` is the Java package name of the off-chain service. According to Java naming conventions, it should be all lowercase and the parts should be separated by dots.
 

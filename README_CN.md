@@ -50,7 +50,7 @@ sudo docker run -p 3306:3306 --name mysql \
 
 > **提示**
 > 
-> 关于 DDDML，这里有一篇入门的介绍文章：https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML_CN.md 
+> 关于 DDDML，这里有一篇入门的介绍文章：[《DDDML 简介：开启去中心化应用低代码开发的钥匙》](https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML_CN.md)。这篇文章包含了本 Demo 使用的一些 DDDML 模型文件的详细讲解。 
 
 你可以创建一个目录，比如叫做 `test`，来放置应用的所有代码，然后在该目录下面创建一个子目录 `dddml`。我们一般在这个目录下放置按照 DDDML 的规范编写的模型文件。
 
