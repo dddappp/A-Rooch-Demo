@@ -274,8 +274,6 @@ mvn -pl roochtestproj1-service-rest -am spring-boot:run
 通过这个接口，你可以获取已创建的 DaySummary 对象的列表：http://localhost:1023/api/DaySummaries
 
 
-【TBD】
-
 ## 一些提示
 
 ### 清理已经退出的 Docker 容器
