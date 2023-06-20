@@ -32,6 +32,7 @@ sudo docker run -p 3306:3306 --name mysql \
 -d mysql:5.7
 ```
 
+注意，上面的命令中我们将数据库 root 账号的密码为 123456。下面示例的 shell 命令和 Off-chain 服务的配置中我们直接使用这个 root 账号/密码。你可以视你的运行环境修改它们。
 
 ## 示例：重现 Demo 应用的开发过程
 

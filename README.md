@@ -21,7 +21,7 @@ So before getting started, you need to:
 
 * Install `curl` and `jp` command (jp - commandline JSON processor, optional). We can use jp to process JSON RPC returned JSON results when testing contracts.
 
-If you have already installed Docker, you can use Docker to run a MySQL database service. For example:
+If you have already installed Docker, you can use Docker to run a MySQL database server. For example:
 
 ```shell
 sudo docker run -p 3306:3306 --name mysql \
@@ -32,6 +32,7 @@ sudo docker run -p 3306:3306 --name mysql \
 -d mysql:5.7
 ```
 
+Note that in the above command we set the password of the database `root` account to `123456`, and in the following example shell commands and configuration of the Off-chain service we use this root account/password directly. You can modify them according to your running environment.
 
 ## Example: Reproduce the Development Process of the Demo Application
 
@@ -51,7 +52,7 @@ Our low-code tool relies on the domain model described by DDDML (Domain Driven D
 
 > **Tip**
 >
-> About DDDML, here is an introductory article: https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML_CN.md
+> About DDDML, here is an introductory article: https://github.com/wubuku/Dapp-LCDP-Demo/blob/main/IntroducingDDDML.md
 
 You can create a directory, for example, called `test`, to place all the application code, and then create a subdirectory `dddml` within this directory. We generally put the model files written according to the DDDML specification in this directory.
 
@@ -60,7 +61,7 @@ You can download/copy the sample model files here to the `dddml` directory: http
 In these models, some of the fabricated examples may have become a bit "absurdly" complicated, but our tool is not "stumped".
 
 
-### Run dddappp project creation tool
+### Run dddappp Project Creation Tool
 
 Use Docker to run the project creation tool:
 
@@ -319,7 +320,7 @@ The address of the Move contract you just deployed has been filled in for you in
 
 You can copy these commands, modify them as needed, and execute them directly in the command line terminal.
 
-### How to write DDDML domain model
+### How to Write DDDML Domain Model
 
 #### Use JSON Schema
 
