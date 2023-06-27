@@ -239,8 +239,6 @@ rooch move run --function {YOUR_ACCOUNT_ADDRESS}::order_aggregate::add_order_ite
 
 ### Configure Off-chain Service
 
-打开位于目录 `rooch-java-service/roochtestproj1-service-rest/src/main/resources` 下的 `application-test.yml` 文件，找到类似下面的几行，将占位符 `{YOUR_ACCOUNT_ADDRESS}` 替换为你的账户地址：
-
 Open the file application-test.yml in the directory `rooch-java-service/roochtestproj1-service-rest/src/main/resources`, find the following lines, and replace the placeholder `{YOUR_ACCOUNT_ADDRESS}` with your account address:
 
 ```yaml
