@@ -72,7 +72,7 @@ public class RoochOrderStateRetriever {
                 "/object/" + com.github.wubuku.rooch.utils.HexUtils.formatHex(objectId),
                 Order.MoveObject.class
         );
-        if (getObjectListResponse.size() == 0) {
+        if (getObjectListResponse.size() == 0 || getObjectListResponse.get(0) == null) {
             return null;
         }
         Order.MoveObject order = getObjectListResponse.get(0).getMoveValue().getValue();
@@ -86,6 +86,8 @@ public class RoochOrderStateRetriever {
         orderState.setVersion(order.getVersion());
         orderState.setTotalAmount(order.getTotalAmount());
         orderState.setEstimatedShipDate(DomainBeanUtils.toDay(order.getEstimatedShipDate().getValue().getVec().length == 0 ? null : order.getEstimatedShipDate().getValue().getVec()[0]));
+        orderState.setDeliveryWeekdays(new HashSet<>(Arrays.asList(order.getDeliveryWeekdays())));
+        orderState.setFavoriteDeliveryWeekday(order.getFavoriteDeliveryWeekday().getValue().getVec().length == 0 ? null : order.getFavoriteDeliveryWeekday().getValue().getVec()[0]);
         if (order.getItems() != null) {
             String orderItemTableHandle = order.getItems().getValue().getHandle();
             List<OrderItem> items = getOrderItems(orderItemTableHandle, orderItemProductObjectIdsGetter.getOrderItemProductObjectIds(orderState.getOrderId()));

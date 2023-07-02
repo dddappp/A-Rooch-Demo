@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::tag {
     use moveos_std::account_storage;
-    use moveos_std::events;
+    use moveos_std::event;
     use moveos_std::object::{Self, Object};
     use moveos_std::object_id::ObjectID;
     use moveos_std::object_storage;
@@ -134,7 +134,7 @@ module rooch_test_proj1::tag {
 
     public(friend) fun update_version_and_add(storage_ctx: &mut StorageContext, tag_obj: Object<Tag>) {
         object::borrow_mut(&mut tag_obj).version = object::borrow( &mut tag_obj).version + 1;
-        assert!(object::borrow(&tag_obj).version != 0, EINAPPROPRIATE_VERSION);
+        //assert!(object::borrow(&tag_obj).version != 0, EINAPPROPRIATE_VERSION);
         private_add_tag(storage_ctx, tag_obj);
     }
 
@@ -149,6 +149,7 @@ module rooch_test_proj1::tag {
     }
 
     fun private_add_tag(storage_ctx: &mut StorageContext, tag_obj: Object<Tag>) {
+        assert!(std::string::length(&object::borrow(&tag_obj).name) <= 50, EID_DATA_TOO_LONG);
         let obj_store = storage_context::object_storage_mut(storage_ctx);
         object_storage::add(obj_store, tag_obj);
     }
@@ -167,8 +168,16 @@ module rooch_test_proj1::tag {
         private_add_tag(storage_ctx, tag_obj);
     }
 
+    public(friend) fun drop_tag(tag_obj: Object<Tag>) {
+        let (_id, _owner, tag) =  object::unpack(tag_obj);
+        let Tag {
+            version: _version,
+            name: _name,
+        } = tag;
+    }
+
     public(friend) fun emit_tag_created(storage_ctx: &mut StorageContext, tag_created: TagCreated) {
-        events::emit_event(storage_ctx, tag_created);
+        event::emit_event(storage_ctx, tag_created);
     }
 
 }

@@ -567,6 +567,7 @@ public class M {
     public static final String[] propertyNames = new String[] {
             "orderId",
             "totalAmount",
+            "favoriteDeliveryWeekday",
             "version",
             "offChainVersion",
             "createdBy",
@@ -586,6 +587,7 @@ public class M {
     public static final String[] propertyTypes = new String[] {
             "String",
             "BigInteger",
+            "String",
             "BigInteger",
             "Long",
             "String",
@@ -618,6 +620,8 @@ public class M {
         aliasMap.put("OrderId", "orderId");
         aliasMap.put("totalAmount", "totalAmount");
         aliasMap.put("TotalAmount", "totalAmount");
+        aliasMap.put("favoriteDeliveryWeekday", "favoriteDeliveryWeekday");
+        aliasMap.put("FavoriteDeliveryWeekday", "favoriteDeliveryWeekday");
         aliasMap.put("version", "version");
         aliasMap.put("Version", "version");
         aliasMap.put("offChainVersion", "offChainVersion");

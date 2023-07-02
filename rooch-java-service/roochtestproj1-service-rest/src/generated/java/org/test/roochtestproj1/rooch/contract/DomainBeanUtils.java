@@ -27,6 +27,7 @@ import org.test.roochtestproj1.rooch.contract.order.OrderItemRemoved;
 import org.test.roochtestproj1.rooch.contract.order.OrderItemQuantityUpdated;
 import org.test.roochtestproj1.rooch.contract.order.OrderEstimatedShipDateUpdated;
 import org.test.roochtestproj1.rooch.contract.order.OrderShipGroupAdded;
+import org.test.roochtestproj1.rooch.contract.order.OrderItemShipGroupAssocSubitemAdded;
 import org.test.roochtestproj1.rooch.contract.order.OrderShipGroupQuantityCanceled;
 import org.test.roochtestproj1.rooch.contract.order.OrderShipGroupItemRemoved;
 import org.test.roochtestproj1.domain.product.AbstractProductEvent;
@@ -256,6 +257,23 @@ public class DomainBeanUtils {
         setRoochEventProperties(orderShipGroupAdded, eventEnvelope);
 
         return orderShipGroupAdded;
+    }
+
+    public static AbstractOrderEvent.OrderItemShipGroupAssocSubitemAdded toOrderItemShipGroupAssocSubitemAdded(AnnotatedEventView<OrderItemShipGroupAssocSubitemAdded> eventEnvelope) {
+        OrderItemShipGroupAssocSubitemAdded contractEvent = eventEnvelope.getParsedEventData().getValue();
+
+        AbstractOrderEvent.OrderItemShipGroupAssocSubitemAdded orderItemShipGroupAssocSubitemAdded = new AbstractOrderEvent.OrderItemShipGroupAssocSubitemAdded();
+        orderItemShipGroupAssocSubitemAdded.setOrderId(contractEvent.getOrderId());
+        orderItemShipGroupAssocSubitemAdded.setId_(contractEvent.getId());
+        orderItemShipGroupAssocSubitemAdded.setShipGroupSeqId(contractEvent.getShipGroupSeqId());
+        orderItemShipGroupAssocSubitemAdded.setProductObjId(contractEvent.getProductObjId());
+        orderItemShipGroupAssocSubitemAdded.setDay(DomainBeanUtils.toDay(contractEvent.getDay()));
+        orderItemShipGroupAssocSubitemAdded.setDescription(contractEvent.getDescription());
+        orderItemShipGroupAssocSubitemAdded.setVersion(contractEvent.getVersion());
+
+        setRoochEventProperties(orderItemShipGroupAssocSubitemAdded, eventEnvelope);
+
+        return orderItemShipGroupAssocSubitemAdded;
     }
 
     public static AbstractOrderEvent.OrderShipGroupQuantityCanceled toOrderShipGroupQuantityCanceled(AnnotatedEventView<OrderShipGroupQuantityCanceled> eventEnvelope) {

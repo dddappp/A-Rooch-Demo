@@ -12,6 +12,12 @@ aggregates:
       EstimatedShipDate:
         type: Day
         optional: true
+      DeliveryWeekdays:
+        itemType: Weekday
+        description: "Preferred delivery weekdays"
+      FavoriteDeliveryWeekday:
+        type: Weekday2
+        optional: true
       Items:
         itemType: OrderItem
       OrderShipGroups:
@@ -146,6 +152,22 @@ aggregates:
             type: u64
         event:
           name: OrderShipGroupAdded
+
+      AddOrderItemShipGroupAssocSubitem:
+        parameters:
+          ShipGroupSeqId:
+            type: u8
+          #ProductId:
+          #  type: String
+          ProductObjId:
+            type: ObjectID
+          Day:
+            type: Day
+          Description:
+            type: String
+            length: 100
+        event:
+          name: OrderItemShipGroupAssocSubitemAdded
 
       CancelOrderShipGroupQuantity:
         parameters:

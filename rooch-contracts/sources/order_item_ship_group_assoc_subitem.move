@@ -11,6 +11,7 @@ module rooch_test_proj1::order_item_ship_group_assoc_subitem {
     friend rooch_test_proj1::order_update_item_quantity_logic;
     friend rooch_test_proj1::order_update_estimated_ship_date_logic;
     friend rooch_test_proj1::order_add_order_ship_group_logic;
+    friend rooch_test_proj1::order_add_order_item_ship_group_assoc_subitem_logic;
     friend rooch_test_proj1::order_cancel_order_ship_group_quantity_logic;
     friend rooch_test_proj1::order_remove_order_ship_group_item_logic;
     friend rooch_test_proj1::order_item_ship_group_association;
@@ -32,6 +33,7 @@ module rooch_test_proj1::order_item_ship_group_assoc_subitem {
     }
 
     public(friend) fun set_description(order_item_ship_group_assoc_subitem: &mut OrderItemShipGroupAssocSubitem, description: String) {
+        assert!(std::string::length(&description) <= 100, EID_DATA_TOO_LONG);
         order_item_ship_group_assoc_subitem.description = description;
     }
 

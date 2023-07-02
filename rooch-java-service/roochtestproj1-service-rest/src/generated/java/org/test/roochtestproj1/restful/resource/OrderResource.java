@@ -261,6 +261,24 @@ public class OrderResource {
     }
 
 
+    @PutMapping("{orderId}/_commands/AddOrderItemShipGroupAssocSubitem")
+    public void addOrderItemShipGroupAssocSubitem(@PathVariable("orderId") String orderId, @RequestBody OrderCommands.AddOrderItemShipGroupAssocSubitem content) {
+        try {
+
+            OrderCommands.AddOrderItemShipGroupAssocSubitem cmd = content;//.toAddOrderItemShipGroupAssocSubitem();
+            String idObj = orderId;
+            if (cmd.getOrderId() == null) {
+                cmd.setOrderId(idObj);
+            } else if (!cmd.getOrderId().equals(idObj)) {
+                throw DomainError.named("inconsistentId", "Argument Id %1$s NOT equals body Id %2$s", orderId, cmd.getOrderId());
+            }
+            cmd.setRequesterId(SecurityContextUtil.getRequesterId());
+            orderApplicationService.when(cmd);
+
+        } catch (Exception ex) { logger.info(ex.getMessage(), ex); throw DomainErrorUtils.convertException(ex); }
+    }
+
+
     @PutMapping("{orderId}/_commands/CancelOrderShipGroupQuantity")
     public void cancelOrderShipGroupQuantity(@PathVariable("orderId") String orderId, @RequestBody OrderCommands.CancelOrderShipGroupQuantity content) {
         try {

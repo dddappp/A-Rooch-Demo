@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::order {
     use moveos_std::account_storage;
-    use moveos_std::events;
+    use moveos_std::event;
     use moveos_std::object::{Self, Object};
     use moveos_std::object_id::ObjectID;
     use moveos_std::object_storage;
@@ -24,6 +24,7 @@ module rooch_test_proj1::order {
     friend rooch_test_proj1::order_update_item_quantity_logic;
     friend rooch_test_proj1::order_update_estimated_ship_date_logic;
     friend rooch_test_proj1::order_add_order_ship_group_logic;
+    friend rooch_test_proj1::order_add_order_item_ship_group_assoc_subitem_logic;
     friend rooch_test_proj1::order_cancel_order_ship_group_quantity_logic;
     friend rooch_test_proj1::order_remove_order_ship_group_item_logic;
     friend rooch_test_proj1::order_aggregate;
@@ -32,6 +33,7 @@ module rooch_test_proj1::order {
     const EID_DATA_TOO_LONG: u64 = 102;
     const EINAPPROPRIATE_VERSION: u64 = 103;
     const ENOT_GENESIS_ACCOUNT: u64 = 105;
+    const EINVALID_ENUM_VALUE: u64 = 106;
 
     struct Tables has key {
         order_id_table: Table<String, ObjectID>,
@@ -65,6 +67,8 @@ module rooch_test_proj1::order {
         version: u64,
         total_amount: u128,
         estimated_ship_date: Option<Day>,
+        delivery_weekdays: vector<u8>,
+        favorite_delivery_weekday: Option<String>,
         items: Table<ObjectID, OrderItem>,
         order_ship_groups: Table<u8, OrderShipGroup>,
     }
@@ -98,10 +102,30 @@ module rooch_test_proj1::order {
         object::borrow_mut(order_obj).estimated_ship_date = estimated_ship_date;
     }
 
+    public fun delivery_weekdays(order_obj: &Object<Order>): vector<u8> {
+        object::borrow(order_obj).delivery_weekdays
+    }
+
+    public(friend) fun set_delivery_weekdays(order_obj: &mut Object<Order>, delivery_weekdays: vector<u8>) {
+        assert!(rooch_test_proj1::weekday::are_all_valid(&delivery_weekdays), EINVALID_ENUM_VALUE);
+        object::borrow_mut(order_obj).delivery_weekdays = delivery_weekdays;
+    }
+
+    public fun favorite_delivery_weekday(order_obj: &Object<Order>): Option<String> {
+        object::borrow(order_obj).favorite_delivery_weekday
+    }
+
+    public(friend) fun set_favorite_delivery_weekday(order_obj: &mut Object<Order>, favorite_delivery_weekday: Option<String>) {
+        if (option::is_some(&favorite_delivery_weekday)) {
+            assert!(rooch_test_proj1::weekday2::is_valid(*option::borrow(&favorite_delivery_weekday)), EINVALID_ENUM_VALUE);
+        };
+        object::borrow_mut(order_obj).favorite_delivery_weekday = favorite_delivery_weekday;
+    }
+
     public(friend) fun add_item(storage_ctx: &mut StorageContext, order_obj: &mut Object<Order>, item: OrderItem) {
         let product_object_id = order_item::product_object_id(&item);
         table::add(&mut object::borrow_mut(order_obj).items, product_object_id, item);
-        events::emit_event(storage_ctx, OrderItemTableItemAdded {
+        event::emit_event(storage_ctx, OrderItemTableItemAdded {
             order_id: order_id(order_obj),
             product_object_id,
         });
@@ -127,7 +151,7 @@ module rooch_test_proj1::order {
     public(friend) fun add_order_ship_group(storage_ctx: &mut StorageContext, order_obj: &mut Object<Order>, order_ship_group: OrderShipGroup) {
         let ship_group_seq_id = order_ship_group::ship_group_seq_id(&order_ship_group);
         table::add(&mut object::borrow_mut(order_obj).order_ship_groups, ship_group_seq_id, order_ship_group);
-        events::emit_event(storage_ctx, OrderShipGroupTableItemAdded {
+        event::emit_event(storage_ctx, OrderShipGroupTableItemAdded {
             order_id: order_id(order_obj),
             ship_group_seq_id,
         });
@@ -157,13 +181,21 @@ module rooch_test_proj1::order {
         order_id: String,
         total_amount: u128,
         estimated_ship_date: Option<Day>,
+        delivery_weekdays: vector<u8>,
+        favorite_delivery_weekday: Option<String>,
     ): Order {
         assert!(std::string::length(&order_id) <= 50, EID_DATA_TOO_LONG);
+        assert!(rooch_test_proj1::weekday::are_all_valid(&delivery_weekdays), EINVALID_ENUM_VALUE);
+        if (option::is_some(&favorite_delivery_weekday)) {
+            assert!(rooch_test_proj1::weekday2::is_valid(*option::borrow(&favorite_delivery_weekday)), EINVALID_ENUM_VALUE);
+        };
         Order {
             order_id,
             version: 0,
             total_amount,
             estimated_ship_date,
+            delivery_weekdays,
+            favorite_delivery_weekday,
             items: table::new<ObjectID, OrderItem>(tx_ctx),
             order_ship_groups: table::new<u8, OrderShipGroup>(tx_ctx),
         }
@@ -382,6 +414,58 @@ module rooch_test_proj1::order {
         }
     }
 
+    struct OrderItemShipGroupAssocSubitemAdded has key {
+        id: ObjectID,
+        order_id: String,
+        version: u64,
+        ship_group_seq_id: u8,
+        product_obj_id: ObjectID,
+        day: Day,
+        description: String,
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_id(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): ObjectID {
+        order_item_ship_group_assoc_subitem_added.id
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_order_id(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): String {
+        order_item_ship_group_assoc_subitem_added.order_id
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_ship_group_seq_id(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): u8 {
+        order_item_ship_group_assoc_subitem_added.ship_group_seq_id
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_product_obj_id(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): ObjectID {
+        order_item_ship_group_assoc_subitem_added.product_obj_id
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_day(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): Day {
+        order_item_ship_group_assoc_subitem_added.day
+    }
+
+    public fun order_item_ship_group_assoc_subitem_added_description(order_item_ship_group_assoc_subitem_added: &OrderItemShipGroupAssocSubitemAdded): String {
+        order_item_ship_group_assoc_subitem_added.description
+    }
+
+    public(friend) fun new_order_item_ship_group_assoc_subitem_added(
+        order_obj: &Object<Order>,
+        ship_group_seq_id: u8,
+        product_obj_id: ObjectID,
+        day: Day,
+        description: String,
+    ): OrderItemShipGroupAssocSubitemAdded {
+        OrderItemShipGroupAssocSubitemAdded {
+            id: id(order_obj),
+            order_id: order_id(order_obj),
+            version: version(order_obj),
+            ship_group_seq_id,
+            product_obj_id,
+            day,
+            description,
+        }
+    }
+
     struct OrderShipGroupQuantityCanceled has key {
         id: ObjectID,
         order_id: String,
@@ -471,6 +555,8 @@ module rooch_test_proj1::order {
         order_id: String,
         total_amount: u128,
         estimated_ship_date: Option<Day>,
+        delivery_weekdays: vector<u8>,
+        favorite_delivery_weekday: Option<String>,
     ): Object<Order> {
         let tx_ctx = storage_context::tx_context_mut(storage_ctx);
         let order = new_order(
@@ -478,6 +564,8 @@ module rooch_test_proj1::order {
             order_id,
             total_amount,
             estimated_ship_date,
+            delivery_weekdays,
+            favorite_delivery_weekday,
         );
         let obj_owner = tx_context::sender(tx_ctx);
         let order_obj = object::new(
@@ -509,7 +597,7 @@ module rooch_test_proj1::order {
 
     public(friend) fun update_version_and_add(storage_ctx: &mut StorageContext, order_obj: Object<Order>) {
         object::borrow_mut(&mut order_obj).version = object::borrow( &mut order_obj).version + 1;
-        assert!(object::borrow(&order_obj).version != 0, EINAPPROPRIATE_VERSION);
+        //assert!(object::borrow(&order_obj).version != 0, EINAPPROPRIATE_VERSION);
         private_add_order(storage_ctx, order_obj);
     }
 
@@ -524,6 +612,11 @@ module rooch_test_proj1::order {
     }
 
     fun private_add_order(storage_ctx: &mut StorageContext, order_obj: Object<Order>) {
+        assert!(std::string::length(&object::borrow(&order_obj).order_id) <= 50, EID_DATA_TOO_LONG);
+        assert!(rooch_test_proj1::weekday::are_all_valid(&object::borrow(&order_obj).delivery_weekdays), EINVALID_ENUM_VALUE);
+        if (option::is_some(&object::borrow(&order_obj).favorite_delivery_weekday)) {
+            assert!(rooch_test_proj1::weekday2::is_valid(*option::borrow(&object::borrow(&order_obj).favorite_delivery_weekday)), EINVALID_ENUM_VALUE);
+        };
         let obj_store = storage_context::object_storage_mut(storage_ctx);
         object_storage::add(obj_store, order_obj);
     }
@@ -543,31 +636,35 @@ module rooch_test_proj1::order {
     }
 
     public(friend) fun emit_order_created(storage_ctx: &mut StorageContext, order_created: OrderCreated) {
-        events::emit_event(storage_ctx, order_created);
+        event::emit_event(storage_ctx, order_created);
     }
 
     public(friend) fun emit_order_item_removed(storage_ctx: &mut StorageContext, order_item_removed: OrderItemRemoved) {
-        events::emit_event(storage_ctx, order_item_removed);
+        event::emit_event(storage_ctx, order_item_removed);
     }
 
     public(friend) fun emit_order_item_quantity_updated(storage_ctx: &mut StorageContext, order_item_quantity_updated: OrderItemQuantityUpdated) {
-        events::emit_event(storage_ctx, order_item_quantity_updated);
+        event::emit_event(storage_ctx, order_item_quantity_updated);
     }
 
     public(friend) fun emit_order_estimated_ship_date_updated(storage_ctx: &mut StorageContext, order_estimated_ship_date_updated: OrderEstimatedShipDateUpdated) {
-        events::emit_event(storage_ctx, order_estimated_ship_date_updated);
+        event::emit_event(storage_ctx, order_estimated_ship_date_updated);
     }
 
     public(friend) fun emit_order_ship_group_added(storage_ctx: &mut StorageContext, order_ship_group_added: OrderShipGroupAdded) {
-        events::emit_event(storage_ctx, order_ship_group_added);
+        event::emit_event(storage_ctx, order_ship_group_added);
+    }
+
+    public(friend) fun emit_order_item_ship_group_assoc_subitem_added(storage_ctx: &mut StorageContext, order_item_ship_group_assoc_subitem_added: OrderItemShipGroupAssocSubitemAdded) {
+        event::emit_event(storage_ctx, order_item_ship_group_assoc_subitem_added);
     }
 
     public(friend) fun emit_order_ship_group_quantity_canceled(storage_ctx: &mut StorageContext, order_ship_group_quantity_canceled: OrderShipGroupQuantityCanceled) {
-        events::emit_event(storage_ctx, order_ship_group_quantity_canceled);
+        event::emit_event(storage_ctx, order_ship_group_quantity_canceled);
     }
 
     public(friend) fun emit_order_ship_group_item_removed(storage_ctx: &mut StorageContext, order_ship_group_item_removed: OrderShipGroupItemRemoved) {
-        events::emit_event(storage_ctx, order_ship_group_item_removed);
+        event::emit_event(storage_ctx, order_ship_group_item_removed);
     }
 
 }

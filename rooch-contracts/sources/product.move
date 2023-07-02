@@ -5,7 +5,7 @@
 
 module rooch_test_proj1::product {
     use moveos_std::account_storage;
-    use moveos_std::events;
+    use moveos_std::event;
     use moveos_std::object::{Self, Object};
     use moveos_std::object_id::ObjectID;
     use moveos_std::object_storage;
@@ -189,7 +189,7 @@ module rooch_test_proj1::product {
 
     public(friend) fun update_version_and_add(storage_ctx: &mut StorageContext, product_obj: Object<Product>) {
         object::borrow_mut(&mut product_obj).version = object::borrow( &mut product_obj).version + 1;
-        assert!(object::borrow(&product_obj).version != 0, EINAPPROPRIATE_VERSION);
+        //assert!(object::borrow(&product_obj).version != 0, EINAPPROPRIATE_VERSION);
         private_add_product(storage_ctx, product_obj);
     }
 
@@ -204,6 +204,7 @@ module rooch_test_proj1::product {
     }
 
     fun private_add_product(storage_ctx: &mut StorageContext, product_obj: Object<Product>) {
+        assert!(std::string::length(&object::borrow(&product_obj).product_id) <= 20, EID_DATA_TOO_LONG);
         let obj_store = storage_context::object_storage_mut(storage_ctx);
         object_storage::add(obj_store, product_obj);
     }
@@ -216,8 +217,18 @@ module rooch_test_proj1::product {
         private_add_product(storage_ctx, product_obj);
     }
 
+    public(friend) fun drop_product(product_obj: Object<Product>) {
+        let (_id, _owner, product) =  object::unpack(product_obj);
+        let Product {
+            version: _version,
+            product_id: _product_id,
+            name: _name,
+            unit_price: _unit_price,
+        } = product;
+    }
+
     public(friend) fun emit_product_created(storage_ctx: &mut StorageContext, product_created: ProductCreated) {
-        events::emit_event(storage_ctx, product_created);
+        event::emit_event(storage_ctx, product_created);
     }
 
 }
